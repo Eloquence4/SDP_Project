@@ -9,6 +9,9 @@ enum VectorErrors
 class BitVector
 {
 public:
+    static const short dataSize = 64;
+
+public:
     BitVector();
     ~BitVector();
     BitVector(const BitVector& source);
@@ -29,6 +32,10 @@ public:
 
     bool GetBit(size_t index);
 
+    void remove(size_t index);
+    unsigned long long& getBitSet(size_t index);
+    const unsigned long long& getBitSet(size_t index) const;
+
 private:
 
     void copy(unsigned long long* _data, size_t _size);
@@ -36,8 +43,6 @@ private:
 
     unsigned long long* data;
     size_t size;
-
-    static const short dataSize = 64;
 };
 
 #endif // BitVectorDef
