@@ -105,7 +105,7 @@ bool BitVector::GetBit(size_t index)
     index = index / dataSize;
 
     if(index >= size)
-        throw INVALID_INDEX;
+        throw INVALID_BIT_INDEX;
 
     return (data[index] >> (dataSize - pos - 1)) & 1;
 }
@@ -123,7 +123,7 @@ void BitVector::remove(size_t index)
 unsigned long long& BitVector::getBitSet(size_t index)
 {
     if(index >= size)
-        throw INVALID_INDEX;
+        throw INVALID_BIT_INDEX;
 
     return data[index];
 }
@@ -131,7 +131,7 @@ unsigned long long& BitVector::getBitSet(size_t index)
 const unsigned long long& BitVector::getBitSet(size_t index) const
 {
     if(index >= size)
-        throw INVALID_INDEX;
+        throw INVALID_BIT_INDEX;
 
     return data[index];
 }

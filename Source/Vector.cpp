@@ -79,7 +79,7 @@ void Vector::resize(size_t new_size)
         return;
 
     Tree_Node* new_data = new Tree_Node[new_size];
-    for(int i = 0; i < new_size && i < cur_size; ++i)
+    for(size_t i = 0; i < new_size && i < cur_size; ++i)
         new_data[i] = data[i];
 
     delete[] data;
@@ -104,7 +104,7 @@ void Vector::shrink_to_fit()
 Tree_Node& Vector::operator[](size_t index)
 {
     if(index >= max_size)
-        throw INVALID_INDEX;
+        throw INVALID_VECTOR_INDEX;
 
     if(index >= cur_size)
         cur_size = index+1;
@@ -115,7 +115,7 @@ Tree_Node& Vector::operator[](size_t index)
 const Tree_Node& Vector::operator[](size_t index) const
 {
     if(index >= max_size)
-        throw INVALID_INDEX;
+        throw INVALID_VECTOR_INDEX;
 
     return data[index];
 }
@@ -134,7 +134,7 @@ void Vector::push_back(const Tree_Node& new_data)
 Tree_Node Vector::pop_back()
 {
     if(empty())
-        return;
+        throw NOTHING_TO_POP;
 
     --cur_size;
 
@@ -154,7 +154,7 @@ void Vector::copy(const Vector& src)
 {
     Tree_Node* new_data = new Tree_Node[src.max_size];
 
-    for(int i = 0; i < src.cur_size; ++i)
+    for(size_t i = 0; i < src.cur_size; ++i)
         new_data[i] = src.data[i];
 
     delete[] data;

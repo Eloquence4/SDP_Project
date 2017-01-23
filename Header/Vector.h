@@ -4,9 +4,10 @@
 #include <cstddef>
 #include "BinaryTree.h"
 
-enum VectorErrors
+enum VECTOR_ERRORS
 {
-    INVALID_INDEX
+    INVALID_VECTOR_INDEX,
+    NOTHING_TO_POP
 };
 
 class Vector
@@ -22,7 +23,6 @@ public:
 public:
 
     bool full() const;
-    bool empty() const;
 
     size_t size() const;
     size_t limit() const;
@@ -50,4 +50,4 @@ private:
     size_t max_size;
 };
 
-#endif
+#endif // VectorDec

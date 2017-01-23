@@ -1,9 +1,9 @@
 #ifndef BitVectorDef
 #define BitVectorDef
 
-enum VectorErrors
+enum BIT_VECTOR_ERRORS
 {
-    INVALID_INDEX
+    INVALID_BIT_INDEX
 };
 
 class BitVector
