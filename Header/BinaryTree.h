@@ -2,12 +2,15 @@
 #define BinaryTreeDec
 
 #include <cstddef>
+#include <fstream>
 #include "BitVector.h"
 
 struct Tree_Node
 {
     size_t weight; // Required for the Huffman algorithm
     char letter;
+
+    // 3 bytes of padding here that cannot be avoided anyway
 
     Tree_Node* left;
     Tree_Node* right;
@@ -51,7 +54,13 @@ public:
     bool operator<=(const BinaryTree& rhs) const;
     bool operator>=(const BinaryTree& rhs) const;
 
+    void BinaryExport(std::fstream& file) const;
+    void BinaryImport(std::fstream& file);
+
 private:
+
+    void BinaryExport(std::fstream& file, const Tree_Node* cur) const;
+    void BinaryImport(std::fstream& file, Tree_Node*& cur);
 
     bool search(BitVector& vect, size_t& pos, char what, const Tree_Node* cur) const;
     void copy(const Tree_Node* what, Tree_Node*& into);

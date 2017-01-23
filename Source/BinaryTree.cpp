@@ -182,6 +182,67 @@ bool BinaryTree::operator>=(const BinaryTree& rhs) const
     return !(*this < rhs);
 }
 
+void BinaryTree::BinaryExport(std::fstream& file) const
+{
+    bool topExists = top ? true : false;
+
+    file.write((char*) &topExists, sizeof(bool));
+
+    if(topExists)
+        BinaryExport(file, top);
+}
+
+void BinaryTree::BinaryImport(std::fstream& file)
+{
+    bool topExists;
+
+    file.read((char*) &topExists, sizeof(bool));
+
+    Tree_Node* newTop = nullptr;
+
+    if(topExists)
+        BinaryImport(file, top);
+
+    clear(top);
+    top = newTop;
+}
+
+void BinaryTree::BinaryExport(std::fstream& file, const Tree_Node* cur) const
+{
+    if(cur == nullptr)
+        return;
+
+    bool leftExists = cur->left ? true : false;
+    bool rightExists = cur->right ? true : false;
+
+    // Write down the weight and letter of the current node
+    file.write((char*) cur, sizeof(size_t) + sizeof(char)); 
+
+    file.write((char*) &leftExists, sizeof(bool));
+    BinaryExport(file, cur->left);
+
+    file.write((char*) &rightExists, sizeof(bool));
+    BinaryExport(file, cur->right);
+}
+
+void BinaryTree::BinaryImport(std::fstream& file, Tree_Node*& cur)
+{
+    cur = new Tree_Node;
+
+    file.read((char*) cur, sizeof(size_t) + sizeof(char));
+
+    bool leftExists;
+    bool rightExists;
+
+    file.read((char*) &leftExists, sizeof(bool));
+    if(leftExists)
+        BinaryImport(file, cur->left);
+
+    file.read((char*) &rightExists, sizeof(bool));
+    if(rightExists)
+        BinaryImport(file, cur->right);
+}
+
 bool BinaryTree::search(BitVector& vect, size_t& pos, char what, const Tree_Node* cur) const
 {
     if(!cur)
