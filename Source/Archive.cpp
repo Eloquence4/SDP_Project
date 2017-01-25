@@ -1,48 +1,68 @@
+#include <stdio.h>
 #include "../Header/Archive.h"
 
-bool Archive::CompressFolder(std::fstream& archive, const char* folder_name)
+bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, size_t folder_name_len)
 {
     File_Folder_States state = NO_STATE;
-    DIR* pDir = opendir(folder_name);
+    WIN32_FIND_DATA fdFile;
+    HANDLE hFind;
+    char* buffer = nullptr;
 
-    if(!pDir) // folder_name is not a valid path to a folder, is probably a file
+    if(folder_name[folder_name_len - 1] == '\\')
+    {
+        buffer = new char[folder_name_len + 4];
+        sprintf(buffer, "%s*.*", buffer);
+    }
+    else
+    {
+        buffer = new char[folder_name_len + 5];
+        sprintf(buffer, "%s\\*.*", buffer);
+    }
+
+    // folder_name is not a valid path to a folder
+    if((hFind = FindFirstFile(buffer, &fdFile)) == INVALID_HANDLE_VALUE)
+    {
+        delete[] buffer;
         return false;
+    }
 
     // Metadata for the folder
     state = DIRECTORY_START;
-    unsigned file_name_size = strlen(folder_name);
+    unsigned file_name_size = strlen(folder_name) + 1;
     archive.write((char*) &state, sizeof(state));
     archive.write((char*) &file_name_size, sizeof(file_name_size));
-    archive.write(folder_name, file_name_size);
+    archive.write(folder_name, file_name_size + 1);
     ///
 
-    struct dirent* pent = nullptr;
-
-    while(pent = readdir(pDir))
+    while(true)
     {
-        if(!pent)
+        if(!FindNextFile(hFind, &fdFile))
         {
             state = DIRECTORY_END;
             archive.write((char*)&state, sizeof(state));
-            closedir(pDir);
+            FindClose(hFind);
             return true; // Successfully traversed the folder and archived all the files
         }
 
-        if(strcmp(pent->d_name, ".") == 0)
+        if(strcmp(fdFile.cFileName, ".") == 0)
             continue;
-        if(strcmp(pent->d_name, "..") == 0)
-            continue;
-
-        // Will return false only if this is a file
-        // If pend->d_name is a folder, it will recursively archive all the files in it
-        if(CompressFolder(archive, pent->d_name))
+        if(strcmp(fdFile.cFileName, "..") == 0)
             continue;
 
-        // The loop would execture this code only if pent->d_name is a file
-        std::fstream file(pent->d_name, std::ios::in);
-        BinaryTree HuffmanTree = ConstructHuffmanTree(file);
-        FillMetaData(archive, HuffmanTree, pent->d_name, pent->d_namlen);
-        CompressFile(file, archive, HuffmanTree);
+        // If pent is a folder, recursively compress that
+        if(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+            CompressFolder(archive, fdFile.cFileName, strlen(fdFile.cFileName));
+        else // Otherwise compress the file
+        {
+            std::fstream file(fdFile.cFileName, std::ios::in);
+            if(!file)
+            {
+                // Some message
+            }
+            BinaryTree HuffmanTree = ConstructHuffmanTree(file);
+            FillMetaData(archive, HuffmanTree, fdFile.cFileName, strlen(fdFile.cFileName));
+            CompressFile(file, archive, HuffmanTree);
+        }
     }
 }
 
@@ -90,8 +110,8 @@ void Archive::FillMetaData(std::fstream& file, const BinaryTree& HuffmanTree, co
 {
     File_Folder_States state = FILE_START;
     file.write((char*) &state, sizeof(state));
-    file.write((char*) &fileNameLen, sizeof(size_t));
-    file.write(fileName, fileNameLen);
+    file.write((char*) &fileNameLen, sizeof(fileNameLen));
+    file.write(fileName, fileNameLen+1);
     HuffmanTree.BinaryExport(file);
 }
 

@@ -3,23 +3,23 @@
 
 #include <string> // For strcmp() and strlen()
 #include <fstream>
+#include <Windows.h>
 #include "BinaryTree.h"
 #include "BitVector.h"
 #include "PriorityQueue.h"
 #include "Vector.h"
-#include "dirent.h"
-
-enum File_Folder_States
-{
-    NO_STATE,
-    DIRECTORY_START,
-    DIRECTORY_END,
-    FILE_START
-};
 
 namespace Archive
 {
-    bool CompressFolder(std::fstream& archive, const char* folder_name);
+    enum File_Folder_States
+    {
+        NO_STATE,
+        DIRECTORY_START,
+        DIRECTORY_END,
+        FILE_START
+    };
+
+    bool CompressFolder(std::fstream& archive, const char* folder_name, size_t folder_name_len);
 
     BinaryTree ConstructHuffmanTree(std::fstream& file);
 
