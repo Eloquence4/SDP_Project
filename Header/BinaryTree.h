@@ -7,8 +7,8 @@
 
 struct Tree_Node
 {
-    size_t weight; // Required for the Huffman algorithm
     char letter;
+    size_t weight; // Required for the Huffman algorithm
 
     // 3 bytes of padding here that cannot be avoided anyway
 
@@ -39,7 +39,8 @@ public:
 
     BinaryTree(size_t weight, char letter);
 
-    bool search(BitVector& vect, size_t& pos, char what) const;
+    bool writeBits(BitVector& vect, size_t& pos, char what) const;
+    char extractBits(const BitVector& vect, size_t& pos) const;
 
     int height() const;
 
@@ -66,7 +67,7 @@ private:
     void BinaryExport(std::fstream& file, const Tree_Node* cur) const;
     void BinaryImport(std::fstream& file, Tree_Node*& cur);
 
-    bool search(BitVector& vect, size_t& pos, char what, const Tree_Node* cur) const;
+    bool writeBits(BitVector& vect, size_t& pos, char what, const Tree_Node* cur) const;
     void copy(const Tree_Node* what, Tree_Node*& into);
     void clear(Tree_Node* cur);
 

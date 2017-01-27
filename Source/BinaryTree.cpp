@@ -65,9 +65,14 @@ BinaryTree::BinaryTree(size_t weight, char letter)
     top = new Tree_Node(weight, letter);
 }
 
-bool BinaryTree::search(BitVector& vect, size_t& pos, char what) const
+bool BinaryTree::writeBits(BitVector& vect, size_t& pos, char what) const
 {
-    return search(vect, pos, what, top);
+    return writeBits(vect, pos, what, top);
+}
+
+char BinaryTree::extractBits(const BitVector & vect, size_t & pos) const
+{
+
 }
 
 int BinaryTree::height() const
@@ -237,8 +242,9 @@ void BinaryTree::BinaryExport(std::fstream& file, const Tree_Node* cur) const
     bool leftExists = cur->left ? true : false;
     bool rightExists = cur->right ? true : false;
 
-    // Write down the weight and letter of the current node
-    file.write((char*) cur, sizeof(size_t) + sizeof(char)); 
+    // Write down the letter of the current node
+    // We skip the weight because we do not need it in the archive
+    file.write((char*) cur, sizeof(char)); 
 
     file.write((char*) &leftExists, sizeof(bool));
     BinaryExport(file, cur->left);
@@ -251,7 +257,7 @@ void BinaryTree::BinaryImport(std::fstream& file, Tree_Node*& cur)
 {
     cur = new Tree_Node;
 
-    file.read((char*) cur, sizeof(size_t) + sizeof(char));
+    file.read((char*) cur, sizeof(char));
 
     bool leftExists;
     bool rightExists;
@@ -265,7 +271,7 @@ void BinaryTree::BinaryImport(std::fstream& file, Tree_Node*& cur)
         BinaryImport(file, cur->right);
 }
 
-bool BinaryTree::search(BitVector& vect, size_t& pos, char what, const Tree_Node* cur) const
+bool BinaryTree::writeBits(BitVector& vect, size_t& pos, char what, const Tree_Node* cur) const
 {
     if(!cur)
         return false;
@@ -279,12 +285,12 @@ bool BinaryTree::search(BitVector& vect, size_t& pos, char what, const Tree_Node
     size_t oldPos = pos;
     ++pos;
 
-    if(search(vect, pos, what, cur->left))
+    if(writeBits(vect, pos, what, cur->left))
     {
         vect.change(oldPos, 0);
         return true;
     }
-    else if(search(vect, pos, what, cur->right))
+    else if(writeBits(vect, pos, what, cur->right))
     {
         vect.change(oldPos, 1);
         return true;
