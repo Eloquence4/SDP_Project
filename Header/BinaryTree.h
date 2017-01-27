@@ -41,7 +41,7 @@ public:
 
     bool search(BitVector& vect, size_t& pos, char what) const;
 
-    int height();
+    int height() const;
 
     BinaryTree& operator+=(const Tree_Node& rhs);
     BinaryTree  operator+ (const Tree_Node& rhs) const;
@@ -61,7 +61,7 @@ public:
 
 private:
 
-    int height(Tree_Node* cur);
+    int height(const Tree_Node* cur) const;
 
     void BinaryExport(std::fstream& file, const Tree_Node* cur) const;
     void BinaryImport(std::fstream& file, Tree_Node*& cur);
