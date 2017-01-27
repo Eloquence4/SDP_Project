@@ -70,9 +70,9 @@ bool BinaryTree::writeBits(BitVector& vect, size_t& pos, char what) const
     return writeBits(vect, pos, what, top);
 }
 
-char BinaryTree::extractBits(const BitVector & vect, size_t & pos) const
+char BinaryTree::extractBits(const BitVector& vect, size_t& pos) const
 {
-
+    extractBits(vect, pos, top);
 }
 
 int BinaryTree::height() const
@@ -232,6 +232,14 @@ int BinaryTree::height(const Tree_Node* cur) const
         return leftHeight + 1;
     else
         return rightHeight + 1;
+}
+
+char BinaryTree::extractBits(const BitVector& vect, size_t& pos, const Tree_Node* cur) const
+{
+    if(vect.GetBit(pos))
+    {
+
+    }
 }
 
 void BinaryTree::BinaryExport(std::fstream& file, const Tree_Node* cur) const

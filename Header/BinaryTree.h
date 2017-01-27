@@ -5,6 +5,11 @@
 #include <fstream>
 #include "BitVector.h"
 
+enum HUFFMAN_TREE_ERRORS
+{
+
+};
+
 struct Tree_Node
 {
     char letter;
@@ -63,6 +68,8 @@ public:
 private:
 
     int height(const Tree_Node* cur) const;
+
+    char extractBits(const BitVector& vect, size_t& pos, const Tree_Node* cur) const;
 
     void BinaryExport(std::fstream& file, const Tree_Node* cur) const;
     void BinaryImport(std::fstream& file, Tree_Node*& cur);
