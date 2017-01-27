@@ -72,7 +72,7 @@ bool BinaryTree::writeBits(BitVector& vect, size_t& pos, char what) const
 
 char BinaryTree::extractBits(const BitVector& vect, size_t& pos) const
 {
-    extractBits(vect, pos, top);
+    return extractBits(vect, pos, top);
 }
 
 int BinaryTree::height() const
@@ -247,12 +247,12 @@ char BinaryTree::extractBits(const BitVector& vect, size_t& pos, const Tree_Node
         if(vect.GetBit(pos))
         {
             pos++;
-            extractBits(vect, pos, cur->right);
+            return extractBits(vect, pos, cur->right);
         }
         else
         {
             pos++;
-            extractBits(vect, pos, cur->left);
+            return extractBits(vect, pos, cur->left);
         }
     }
     catch(BIT_VECTOR_ERRORS& err)

@@ -131,7 +131,7 @@ void BitVector::remove(size_t index)
         data[i] = data[i+1];
 }
 
-unsigned long long& BitVector::getBitSet(size_t index = 0)
+unsigned long long& BitVector::getBitSet(size_t index)
 {
     if(index >= size)
         throw INVALID_BIT_INDEX;

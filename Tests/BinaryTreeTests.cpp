@@ -22,11 +22,11 @@ namespace BinaryTreeTests
             BitVector vect;
             size_t pos = 0;
 
-            Assert::IsTrue(test.search(vect, pos, 'c'));
-            Assert::IsTrue(test.search(vect, pos, 'j'));
-            Assert::IsTrue(test.search(vect, pos, 'b'));
-            Assert::IsFalse(test.search(vect, pos, 'k'));
-            Assert::IsFalse(test.search(vect, pos, 'i'));
+            Assert::IsTrue(test.writeBits(vect, pos, 'c'));
+            Assert::IsTrue(test.writeBits(vect, pos, 'j'));
+            Assert::IsTrue(test.writeBits(vect, pos, 'b'));
+            Assert::IsFalse(test.writeBits(vect, pos, 'k'));
+            Assert::IsFalse(test.writeBits(vect, pos, 'i'));
 
             Assert::IsFalse(vect.GetBit(0));
             Assert::IsFalse(vect.GetBit(1));

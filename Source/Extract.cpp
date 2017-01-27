@@ -101,7 +101,7 @@ bool Extract::ExtractFolder(std::fstream& archive, const char* WhereToExtract, s
         else // state == DIRECTORY_END
             return true;
     }
-
+    return true;
 }
 
 BinaryTree Extract::ExtractHuffmanTree(std::fstream& archive)
