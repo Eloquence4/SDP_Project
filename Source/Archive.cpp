@@ -127,7 +127,7 @@ void Archive::CompressFile(std::fstream& from, std::fstream& target, const Binar
     {
         char letter = from.get();
 
-        HuffmanTree.search(bits, pos, letter);
+        HuffmanTree.writeBits(bits, pos, letter);
 
         while(pos >= BitVector::dataSize)
         {
