@@ -8,16 +8,7 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
     HANDLE hFind;
     char* buffer = nullptr;
 
-    if(folder_name[folder_name_len - 1] == '\\')
-    {
-        buffer = new char[folder_name_len + 4];
-        sprintf(buffer, "%s*.*", folder_name);
-    }
-    else
-    {
-        buffer = new char[folder_name_len + 5];
-        sprintf(buffer, "%s\\*.*", folder_name);
-    }
+    CreatePath(buffer, folder_name, "*.*", folder_name_len, 3);
 
     // folder_name is not a valid path to a folder
     if((hFind = FindFirstFile(buffer, &fdFile)) == INVALID_HANDLE_VALUE)
@@ -30,7 +21,6 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
 
     // Metadata for the folder
     DirectoryMetaData(archive, folder_name, folder_name_len);
-    ///
 
     while(true)
     {
@@ -50,31 +40,22 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
         // If pent is a folder, recursively compress that
         if(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
         {
-            size_t newFolderLen = strlen(fdFile.cFileName);
-
-            if(folder_name[folder_name_len - 1] == '\\')
-            {
-                newFolderLen = folder_name_len + newFolderLen + 1;
-                buffer = new char[newFolderLen];
-                sprintf(buffer, "%s%s", folder_name, fdFile.cFileName);
-            }
-            else
-            {
-                newFolderLen = folder_name_len + 1 + newFolderLen + 1;
-                buffer = new char[newFolderLen];
-                sprintf(buffer, "%s\\%s", folder_name, fdFile.cFileName);
-            }
-
+            CreatePath(buffer, folder_name, fdFile.cFileName, folder_name_len, strlen(fdFile.cFileName));
             CompressFolder(archive, buffer, strlen(fdFile.cFileName));
             delete[] buffer;
         }
         else // Otherwise compress the file
         {
-            std::fstream file(fdFile.cFileName, std::ios::in);
+            CreatePath(buffer, folder_name, fdFile.cFileName, folder_name_len, strlen(fdFile.cFileName));
+            
+            std::fstream file(buffer, std::ios::in);
+
+            delete[] buffer;
             if(!file)
             {
                 // Some message
             }
+
             BinaryTree HuffmanTree = ConstructHuffmanTree(file);
             FillMetaData(archive, HuffmanTree, fdFile.cFileName, strlen(fdFile.cFileName));
             CompressFile(file, archive, HuffmanTree);
@@ -199,7 +180,23 @@ void Archive::CompressFile(std::fstream& from, std::fstream& target, const Binar
         target.write((char*) &bits.getBitSet(0), BitVector::dataSize);
 }
 
-
+size_t Archive::CreatePath(char*& buffer, const char* path, const char* name, size_t path_len, size_t name_len)
+{
+    size_t bufferLen = 0;
+    if(path[path_len - 1] == '\\')
+    {
+        bufferLen = path_len + name_len + 1;
+        buffer = new char[bufferLen];
+        sprintf(buffer, "%s%s", path, name);
+    }
+    else
+    {
+        bufferLen = path_len + 1 + name_len + 1;
+        buffer = new char[bufferLen];
+        sprintf(buffer, "%s\\%s", path, name);
+    }
+    return bufferLen;
+}
 
 
 

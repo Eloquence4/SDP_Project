@@ -30,6 +30,8 @@ namespace Archive
     void CompressFile(std::fstream& from, std::fstream& target, const BinaryTree& HuffmanTree);
 
     void DirectoryMetaData(std::fstream& file, const char* folder_name, size_t folder_name_len);
+    
+    size_t CreatePath(char*& buffer, const char* path, const char* name, size_t path_len, size_t name_len);
 }
 
 #endif // ArchiveDec
