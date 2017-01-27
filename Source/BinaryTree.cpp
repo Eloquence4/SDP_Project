@@ -236,9 +236,31 @@ int BinaryTree::height(const Tree_Node* cur) const
 
 char BinaryTree::extractBits(const BitVector& vect, size_t& pos, const Tree_Node* cur) const
 {
-    if(vect.GetBit(pos))
-    {
+    if(leaf(cur))
+        return cur->letter;
 
+    if(cur == nullptr)
+        return -1;
+
+    try
+    {
+        if(vect.GetBit(pos))
+        {
+            pos++;
+            extractBits(vect, pos, cur->right);
+        }
+        else
+        {
+            pos++;
+            extractBits(vect, pos, cur->left);
+        }
+    }
+    catch(BIT_VECTOR_ERRORS& err)
+    {
+        if(err == INVALID_BIT_INDEX)
+            return -1;
+        else
+            throw err;
     }
 }
 

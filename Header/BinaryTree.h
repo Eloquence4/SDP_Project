@@ -5,11 +5,6 @@
 #include <fstream>
 #include "BitVector.h"
 
-enum HUFFMAN_TREE_ERRORS
-{
-
-};
-
 struct Tree_Node
 {
     char letter;
