@@ -70,6 +70,14 @@ bool BinaryTree::search(BitVector& vect, size_t& pos, char what) const
     return search(vect, pos, what, top);
 }
 
+int BinaryTree::height()
+{
+    if(!top)
+        return 0;
+
+    return height(top);
+}
+
 BinaryTree& BinaryTree::operator+=(const Tree_Node& rhs)
 {
     Tree_Node* tmp = new Tree_Node(rhs);
@@ -205,6 +213,20 @@ void BinaryTree::BinaryImport(std::fstream& file)
 
     clear(top);
     top = newTop;
+}
+
+int BinaryTree::height(Tree_Node* cur)
+{
+    if(!cur)
+        return -1;
+
+    int leftHeight = height(cur->left);
+    int rightHeight = height(cur->right);
+
+    if(leftHeight > rightHeight)
+        return leftHeight + 1;
+    else
+        return rightHeight + 1;
 }
 
 void BinaryTree::BinaryExport(std::fstream& file, const Tree_Node* cur) const
