@@ -1,6 +1,8 @@
 #ifndef BitVectorDef
 #define BitVectorDef
 
+#include <fstream>
+
 enum BIT_VECTOR_ERRORS
 {
     INVALID_BIT_INDEX
@@ -30,10 +32,12 @@ public:
 
     void clear();
 
-    bool GetBit(size_t index);
+    bool GetBit(size_t index) const;
+
+    void readSet(std::fstream& binaryFile, size_t startIndex, size_t endIndex);
 
     void remove(size_t index);
-    unsigned long long& getBitSet(size_t index);
+    unsigned long long& getBitSet(size_t index = 0);
     const unsigned long long& getBitSet(size_t index) const;
 
 private:

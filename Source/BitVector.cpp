@@ -99,7 +99,7 @@ void BitVector::clear()
     size = 0;
 }
 
-bool BitVector::GetBit(size_t index)
+bool BitVector::GetBit(size_t index) const
 {
     int pos = index % dataSize;
     index = index / dataSize;
@@ -110,6 +110,18 @@ bool BitVector::GetBit(size_t index)
     return (data[index] >> (dataSize - pos - 1)) & 1;
 }
 
+void BitVector::readSet(std::fstream& binaryFile, size_t startIndex, size_t endIndex)
+{
+    if(startIndex > endIndex)
+        return;
+
+    if(endIndex >= size)
+        resize(endIndex + 1);
+
+    unsigned long long* begin = data + startIndex;
+    binaryFile.read((char*) begin, sizeof(unsigned long long) * (endIndex - startIndex + 1));
+}
+
 void BitVector::remove(size_t index)
 {
     if(index >= size)
@@ -117,10 +129,9 @@ void BitVector::remove(size_t index)
 
     for(size_t i = index; i < size-1; ++i)
         data[i] = data[i+1];
-    --size;
 }
 
-unsigned long long& BitVector::getBitSet(size_t index)
+unsigned long long& BitVector::getBitSet(size_t index = 0)
 {
     if(index >= size)
         throw INVALID_BIT_INDEX;
