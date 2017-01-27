@@ -61,5 +61,27 @@ namespace BinaryTreeTests
             Assert::IsFalse(c < b);
         }
 
+        TEST_METHOD(BinaryTreeHeight)
+        {
+            BinaryTree test(1, 'a');
+
+            test += BinaryTree(2, 'b');
+            test += BinaryTree(3, 'c');
+            test += BinaryTree(3, 'f');
+            test += BinaryTree(8, 'j');
+            test += test;
+
+            Assert::AreEqual(test.height(), 5);
+
+            BinaryTree test2(1, 'a');
+
+            test2 += test;
+            test2 += BinaryTree(3, 'c');
+            test2 += BinaryTree(3, 'f');
+            test2 += BinaryTree(8, 'j');
+            test2 += test2;
+
+            Assert::AreEqual(test2.height(), 10);
+        }
     };
 }
