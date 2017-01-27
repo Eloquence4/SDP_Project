@@ -11,12 +11,12 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
     if(folder_name[folder_name_len - 1] == '\\')
     {
         buffer = new char[folder_name_len + 4];
-        sprintf(buffer, "%s*.*", buffer);
+        sprintf(buffer, "%s*.*", folder_name);
     }
     else
     {
         buffer = new char[folder_name_len + 5];
-        sprintf(buffer, "%s\\*.*", buffer);
+        sprintf(buffer, "%s\\*.*", folder_name);
     }
 
     // folder_name is not a valid path to a folder
@@ -26,12 +26,10 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
         return false;
     }
 
+    delete[] buffer;
+
     // Metadata for the folder
-    state = DIRECTORY_START;
-    unsigned file_name_size = strlen(folder_name) + 1;
-    archive.write((char*) &state, sizeof(state));
-    archive.write((char*) &file_name_size, sizeof(file_name_size));
-    archive.write(folder_name, file_name_size + 1);
+    DirectoryMetaData(archive, folder_name, folder_name_len);
     ///
 
     while(true)
@@ -51,7 +49,25 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
 
         // If pent is a folder, recursively compress that
         if(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-            CompressFolder(archive, fdFile.cFileName, strlen(fdFile.cFileName));
+        {
+            size_t newFolderLen = strlen(fdFile.cFileName);
+
+            if(folder_name[folder_name_len - 1] == '\\')
+            {
+                newFolderLen = folder_name_len + newFolderLen + 1;
+                buffer = new char[newFolderLen];
+                sprintf(buffer, "%s%s", folder_name, fdFile.cFileName);
+            }
+            else
+            {
+                newFolderLen = folder_name_len + 1 + newFolderLen + 1;
+                buffer = new char[newFolderLen];
+                sprintf(buffer, "%s\\%s", folder_name, fdFile.cFileName);
+            }
+
+            CompressFolder(archive, buffer, strlen(fdFile.cFileName));
+            delete[] buffer;
+        }
         else // Otherwise compress the file
         {
             std::fstream file(fdFile.cFileName, std::ios::in);
@@ -63,6 +79,48 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
             FillMetaData(archive, HuffmanTree, fdFile.cFileName, strlen(fdFile.cFileName));
             CompressFile(file, archive, HuffmanTree);
         }
+    }
+}
+
+void Archive::DirectoryMetaData(std::fstream& file, const char* folder_name, size_t folder_name_len)
+{
+    File_Folder_States state = DIRECTORY_START;
+
+    // If folder_name is a filepath to the folder, this will point to where the folder_name actually is
+    const char* folder_name_beg = nullptr;
+
+    size_t folder_name_beg_len = folder_name_len - 2;
+
+    while(true)
+    {
+        if(folder_name[folder_name_beg_len] == '\\')
+        {
+            folder_name_beg = folder_name + folder_name_beg_len + 1;
+            break;
+        }
+        if(folder_name_beg_len == 0)
+        {
+            folder_name_beg = folder_name;
+            break;
+        }
+        folder_name_beg_len--;
+    }
+
+    folder_name_beg_len = folder_name_len - folder_name_beg_len - 1;
+    if(folder_name[folder_name_len-1] == '\\')
+    {
+        folder_name_beg_len--;
+        char tmp = '\0';
+        file.write((char*)&state, sizeof(state));
+        file.write((char*)&folder_name_beg_len, sizeof(folder_name_beg_len));
+        file.write(folder_name_beg, folder_name_beg_len);
+        file.write((char*)&tmp, 1);
+    }
+    else
+    {
+        file.write((char*)&state, sizeof(state));
+        file.write((char*)&folder_name_beg_len, sizeof(folder_name_beg_len));
+        file.write(folder_name_beg, folder_name_beg_len + 1);
     }
 }
 

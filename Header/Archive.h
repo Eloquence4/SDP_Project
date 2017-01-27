@@ -28,6 +28,8 @@ namespace Archive
     void FillMetaData(std::fstream& file, const BinaryTree& HuffmanTree, const char* fileName, size_t fileNameLen);
 
     void CompressFile(std::fstream& from, std::fstream& target, const BinaryTree& HuffmanTree);
+
+    void DirectoryMetaData(std::fstream& file, const char* folder_name, size_t folder_name_len);
 }
 
 #endif // ArchiveDec
