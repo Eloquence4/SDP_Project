@@ -55,34 +55,48 @@ bool Extract::ExtractFolder(std::fstream& archive, const char* WhereToExtract, s
             size_t fileNameLen = 0;
             archive.read((char*) &fileNameLen, sizeof(fileNameLen));
 
-            char* fileName = new char[fileNameLen + 1];
-            archive.read(fileName, fileNameLen+1);
+            char* filePath;
+            char* fileName;
 
-            BinaryTree HuffmanTree = ExtractHuffmanTree(archive);
-
-            size_t bufferLen = 0;
-            char* buffer = nullptr;
+            size_t filePathLen = 0;
 
             if(WhereToExtract[WhereToExtractLen - 1] != '\\')
             {
                 // Length of initial path + \\ + len of new fodler + '\0'
-                bufferLen = WhereToExtractLen + 1 + fileNameLen + 1;
-                buffer = new char[bufferLen];
-                sprintf(buffer, "%s\\%s", WhereToExtract, fileName);
+                filePathLen = WhereToExtractLen + 1 + fileNameLen + 1;
+                filePath = new char[filePathLen];
+
+                // FileName will be right after the \\ in FilePath
+                fileName = filePath + WhereToExtractLen + 1;
+
+                sprintf(filePath, "%s\\", WhereToExtract);
+                archive.read(fileName, fileNameLen + 1);
             }
             else
             {
                 // Length of initial path + len of new fodler + '\0'
-                bufferLen = WhereToExtractLen + fileNameLen + 1;
-                buffer = new char[bufferLen];
-                sprintf(buffer, "%s%s", WhereToExtract, fileName);
+                filePathLen = WhereToExtractLen + fileNameLen + 1;
+                filePath = new char[filePathLen];
+
+                // FileName will be right after the \\ in FilePath
+                fileName = filePath + WhereToExtractLen;
+
+                sprintf(filePath, "%s", WhereToExtract);
+                archive.read(fileName, fileNameLen + 1);
             }
 
-            std::fstream file(buffer, std::ios::out | std::ios::trunc);
+            archive.read(fileName, fileNameLen+1);
+
+            BinaryTree HuffmanTree = ExtractHuffmanTree(archive);
+
+            std::fstream file(filePath, std::ios::out | std::ios::trunc);
+            if(!file) // Can only happen if the directory doesn't exist
+            {
+                // Error
+            }
 
             ExtractFile(archive, file, HuffmanTree);
             delete[] fileName;
-            delete[] buffer;
         }
         else // state == DIRECTORY_END
             return true;
