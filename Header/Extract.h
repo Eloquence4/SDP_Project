@@ -16,7 +16,8 @@ namespace Extract
         NO_STATE,
         DIRECTORY_START,
         DIRECTORY_END,
-        FILE_START
+        FILE_START,
+        CORRUPTED_ARCHIVE
     };
 
     bool ExtractFolder(std::fstream& archive, const char* WhereToExtract, size_t WhereToExtractLen);

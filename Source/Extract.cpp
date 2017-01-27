@@ -115,7 +115,31 @@ BinaryTree Extract::ExtractHuffmanTree(std::fstream& archive)
 
 void Extract::ExtractFile(std::fstream& archive, std::fstream& file, const BinaryTree& HuffmanTree)
 {
+    size_t HuffmanTreeHeight = HuffmanTree.height();
+    size_t pos = 0;
 
+    size_t bitSetMaxOverhead = (HuffmanTreeHeight / 64) + 1;
+
+    BitVector bitSet;
+    bitSet.resize(bitSetMaxOverhead);
+    bitSet.readSet(archive, 0, bitSetMaxOverhead-1);
+
+    char curLetter;
+
+    while(curLetter = HuffmanTree.extractBits(bitSet, pos))
+    {
+        if(curLetter == -1)
+            throw CORRUPTED_ARCHIVE;
+
+        file << curLetter;
+
+        while(pos >= BitVector::dataSize)
+        {
+            bitSet.remove(0);
+            bitSet.readSet(archive, bitSetMaxOverhead - 1, bitSetMaxOverhead - 1);
+            pos -= BitVector::dataSize;
+        }
+    }
 }
 
 
