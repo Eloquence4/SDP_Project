@@ -83,6 +83,11 @@ int BinaryTree::height() const
     return height(top);
 }
 
+size_t BinaryTree::weight() const
+{
+    return top ? top->weight : 0;
+}
+
 BinaryTree& BinaryTree::operator+=(const Tree_Node& rhs)
 {
     Tree_Node* tmp = new Tree_Node(rhs);
@@ -201,8 +206,22 @@ void BinaryTree::BinaryExport(std::fstream& file) const
 
     file.write((char*) &topExists, sizeof(bool));
 
-    if(topExists)
-        BinaryExport(file, top);
+    if(!topExists)
+        return;
+
+    bool leftExists = top->left ? true : false;
+    bool rightExists = top->right ? true : false;
+
+    // Write down the letter of the current node
+    // Only write down the weight of the top
+    // sizeof(char)*4 because of the padding
+    file.write((char*)top, sizeof(char)*4 + sizeof(size_t));
+
+    file.write((char*)&leftExists, sizeof(bool));
+    BinaryExport(file, top->left);
+
+    file.write((char*)&rightExists, sizeof(bool));
+    BinaryExport(file, top->right);
 }
 
 void BinaryTree::BinaryImport(std::fstream& file)
@@ -213,8 +232,28 @@ void BinaryTree::BinaryImport(std::fstream& file)
 
     Tree_Node* newTop = nullptr;
 
-    if(topExists)
-        BinaryImport(file, top);
+    if(!topExists)
+    {
+        clear(top);
+        top = newTop;
+        return;
+    }
+
+    newTop = new Tree_Node;
+
+    // sizeof(char)*4 because of the padding
+    file.read((char*)newTop, sizeof(char)*4 + sizeof(size_t));
+
+    bool leftExists;
+    bool rightExists;
+
+    file.read((char*)&leftExists, sizeof(bool));
+    if(leftExists)
+        BinaryImport(file, newTop->left);
+
+    file.read((char*)&rightExists, sizeof(bool));
+    if(rightExists)
+        BinaryImport(file, newTop->right);
 
     clear(top);
     top = newTop;

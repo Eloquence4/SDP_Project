@@ -8,9 +8,8 @@
 struct Tree_Node
 {
     char letter;
-    size_t weight; // Required for the Huffman algorithm
-
     // 3 bytes of padding here that cannot be avoided anyway
+    size_t weight; // Required for the Huffman algorithm
 
     Tree_Node* left;
     Tree_Node* right;
@@ -43,6 +42,7 @@ public:
     char extractBits(const BitVector& vect, size_t& pos) const;
 
     int height() const;
+    size_t weight() const;
 
     BinaryTree& operator+=(const Tree_Node& rhs);
     BinaryTree  operator+ (const Tree_Node& rhs) const;
