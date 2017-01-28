@@ -26,6 +26,7 @@ public:
 
     bool empty() const;
     size_t len() const;
+    size_t bitSetSize() const;
 
     void resize(size_t new_size);
     void reserve(size_t how_much);

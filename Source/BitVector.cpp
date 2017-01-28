@@ -63,6 +63,11 @@ size_t BitVector::len() const
     return size * dataSize;
 }
 
+size_t BitVector::bitSetSize() const
+{
+    return size;
+}
+
 void BitVector::resize(size_t new_size)
 {
     if(new_size == size)
