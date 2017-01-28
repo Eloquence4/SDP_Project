@@ -40,8 +40,8 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
         // If pent is a folder, recursively compress that
         if(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
         {
-            CreatePath(buffer, folder_name, fdFile.cFileName, folder_name_len, strlen(fdFile.cFileName));
-            CompressFolder(archive, buffer, strlen(fdFile.cFileName));
+            size_t bufferLen = CreatePath(buffer, folder_name, fdFile.cFileName, folder_name_len, strlen(fdFile.cFileName));
+            CompressFolder(archive, buffer, bufferLen);
             delete[] buffer;
         }
         else // Otherwise compress the file
@@ -50,7 +50,6 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
             
             std::fstream file(buffer, std::ios::in);
 
-            delete[] buffer;
             if(!file)
             {
                 // Some message
@@ -58,7 +57,9 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
 
             BinaryTree HuffmanTree = ConstructHuffmanTree(file);
             FillMetaData(archive, HuffmanTree, fdFile.cFileName, strlen(fdFile.cFileName));
-            CompressFile(file, archive, HuffmanTree);
+            CompressFile(file, archive, HuffmanTree, buffer);
+            delete[] buffer;
+            file.close();
         }
     }
 }
@@ -114,12 +115,19 @@ BinaryTree Archive::ConstructHuffmanTree(std::fstream& file)
 
     FillWeightVector(file, data);
 
+    size_t dataSize = data.size();
+
     PriorityQueue queue;
-    for(size_t i = 0; i < data.size(); i++)
+    for(size_t i = 0; i < dataSize; i++)
         queue.push(BinaryTree(data[i]));
 
     while(queue.size() > 1)
-        queue.push(queue.pop() + queue.pop());
+    {
+        BinaryTree lhs = std::move(queue.pop());
+        BinaryTree rhs = std::move(queue.pop());
+        lhs += std::move(rhs);
+        queue.push(std::move(lhs));
+    }
 
     return queue.pop();
 }
@@ -129,9 +137,15 @@ void Archive::FillWeightVector(std::fstream& file, Vector& data)
     while(file.good())
     {
         char letter = file.get();
+        if(letter == -1)
+        {
+            data.push_back(Tree_Node(1, '\0'));
+            break;
+        }
         size_t i = 0;
+        size_t dataSize = data.size();
 
-        for(; i < data.size(); i++)
+        for(; i < dataSize; i++)
         {
             if(data[i].letter == letter)
             {
@@ -140,7 +154,7 @@ void Archive::FillWeightVector(std::fstream& file, Vector& data)
             }
         }
 
-        if(i == data.size())
+        if(i == dataSize)
             data.push_back(Tree_Node(1, letter));
     }
 }
@@ -154,10 +168,15 @@ void Archive::FillMetaData(std::fstream& file, const BinaryTree& HuffmanTree, co
     HuffmanTree.BinaryExport(file);
 }
 
-void Archive::CompressFile(std::fstream& from, std::fstream& target, const BinaryTree& HuffmanTree)
+void Archive::CompressFile(std::fstream& from, std::fstream& target, const BinaryTree& HuffmanTree, const char* fileName)
 {
     from.clear();
     from.seekg(0, std::ios::beg);
+
+    size_t step = HuffmanTree.weight() / 20;
+    size_t letters = 0;
+
+    int percent = 5;
 
     BitVector bits;
     size_t pos = 0;
@@ -166,18 +185,31 @@ void Archive::CompressFile(std::fstream& from, std::fstream& target, const Binar
     {
         char letter = from.get();
 
+        if(letter == -1)
+            letter = '\0';
+
         HuffmanTree.writeBits(bits, pos, letter);
+        letters++;
 
         while(pos >= BitVector::dataSize)
         {
-            target.write((char*) &bits.getBitSet(0), BitVector::dataSize);
+            target.write((char*) &bits.getBitSet(0), sizeof(unsigned long long));
             bits.remove(0);
             pos -= BitVector::dataSize;
         }
+
+        if(percent != 100 && letters == step)
+        {
+            letters = 0;
+            printf("%s: %d%% done!\n", fileName, percent);
+            percent += 5;
+        }
     }
 
+    printf("%s: 100%% done!\n", fileName);
+
     if(pos != 0)
-        target.write((char*) &bits.getBitSet(0), BitVector::dataSize);
+        target.write((char*) &bits.getBitSet(0), sizeof(unsigned long long));
 }
 
 size_t Archive::CreatePath(char*& buffer, const char* path, const char* name, size_t path_len, size_t name_len)
@@ -195,11 +227,7 @@ size_t Archive::CreatePath(char*& buffer, const char* path, const char* name, si
         buffer = new char[bufferLen];
         sprintf(buffer, "%s\\%s", path, name);
     }
-    return bufferLen;
+    // BufferLen-1 because BufferLen includes the null character '\0'
+    return bufferLen-1;
 }
-
-
-
-
-
 
