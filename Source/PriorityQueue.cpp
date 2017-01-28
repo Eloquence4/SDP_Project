@@ -80,21 +80,24 @@ void PriorityQueue::push(const BinaryTree& what)
 void PriorityQueue::push(BinaryTree&& what)
 {
     if(max_size == 0)
-        resize(15);
+        resize(16);
     else if(full())
         resize(max_size * 2);
 
     size_t pos = start;
 
     if(!empty())
-        for(size_t i = start; i != end && data[pos] < what; i = (i+1) % max_size)
-            pos++;
+        while(pos != end && data[pos] < what)
+            pos = (pos + 1) % max_size;
 
     if(pos != end)
-        for(int j = end; j != pos;)
+        for(size_t j = end; j != pos;)
         {
-            data[j] = std::move(data[j - 1]);
-            j = (j - 1) % max_size;
+            if(j == 0)
+                j = max_size - 1;
+            else
+                j = j - 1;
+            data[(j+1) % max_size] = std::move(data[j]);
         }
 
     data[pos] = std::move(what);
@@ -194,6 +197,7 @@ void PriorityQueue::resize(size_t new_size)
     start = 0;
     end = i % new_size;
     max_size = new_size;
+    data = newData;
 }
 
 void PriorityQueue::reserve(size_t how_much)
