@@ -41,6 +41,8 @@ public:
     unsigned long long& getBitSet(size_t index = 0);
     const unsigned long long& getBitSet(size_t index) const;
 
+    bool findPattern(const char* pattern, size_t patternLen);
+
 private:
 
     void copy(unsigned long long* _data, size_t _size);

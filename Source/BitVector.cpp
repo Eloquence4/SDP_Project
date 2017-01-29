@@ -152,6 +152,39 @@ const unsigned long long& BitVector::getBitSet(size_t index) const
     return data[index];
 }
 
+bool BitVector::findPattern(const char* pattern, size_t patternLen)
+{
+    size_t pos = 0;
+
+    try
+    {
+        while(true)
+        {
+            size_t bitSetIndex = pos;
+            size_t patternIndex = 0;
+            while(pattern[patternIndex])
+            {
+                if(pattern[patternIndex] == '0' && GetBit(bitSetIndex) == 1)
+                    break;
+                if(pattern[patternIndex] == '1' && GetBit(bitSetIndex) == 0)
+                    break;
+
+                patternIndex++;
+                bitSetIndex++;
+            }
+
+            if(!pattern[patternIndex])
+                return true;
+
+            pos++;
+        }
+    }
+    catch(BIT_VECTOR_ERRORS& err)
+    {
+        return false;
+    }
+}
+
 void BitVector::copy(unsigned long long* _data, size_t _size)
 {
     unsigned long long* tmp = new unsigned long long[_size];
