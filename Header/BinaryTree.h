@@ -41,6 +41,7 @@ public:
     bool writeBits(BitVector& vect, size_t& pos, char what) const;
     char extractBits(const BitVector& vect, size_t& pos) const;
 
+    int height(char ofWhat);
     int height() const;
     size_t weight() const;
 
@@ -60,9 +61,14 @@ public:
     void BinaryExport(std::fstream& file) const;
     void BinaryImport(std::fstream& file);
 
+    bool CreatePattern(char*& holder, char target);
+
 private:
 
+    int height(char ofWhat, const Tree_Node* cur);
     int height(const Tree_Node* cur) const;
+
+    bool CreatePattern(char* holder, char target, const Tree_Node* cur, size_t len, size_t counter);
 
     char extractBits(const BitVector& vect, size_t& pos, const Tree_Node* cur) const;
 

@@ -75,6 +75,14 @@ char BinaryTree::extractBits(const BitVector& vect, size_t& pos) const
     return extractBits(vect, pos, top);
 }
 
+int BinaryTree::height(char ofWhat)
+{
+    if(!top)
+        return 0;
+
+    return height(ofWhat, top);
+}
+
 int BinaryTree::height() const
 {
     if(!top)
@@ -259,6 +267,49 @@ void BinaryTree::BinaryImport(std::fstream& file)
     top = newTop;
 }
 
+bool BinaryTree::CreatePattern(char*& holder, char target)
+{
+    int holderLen = height(target);
+    
+    if(holderLen == -1)
+        return false;
+
+    holder = new char[holderLen + 1];
+    holder[holderLen] = '\0';
+
+    if(!CreatePattern(holder, target, top, holderLen, 0))
+    {
+        delete[] holder;
+        return false;
+    }
+
+    return true;
+}
+
+int BinaryTree::height(char ofWhat, const Tree_Node* cur)
+{
+    if(!cur)
+        return -1;
+
+    if(leaf(cur) && cur->letter == ofWhat)
+        return 0;
+
+    if(leaf(cur) && cur->letter != ofWhat)
+        return -1;
+
+    int leftHeight = height(ofWhat, cur->left);
+
+    if(leftHeight != -1)
+        return 1 + leftHeight;
+
+    int rightHeight = height(ofWhat, cur->right);
+
+    if(rightHeight != -1)
+        return 1 + rightHeight;
+
+    return -1;
+}
+
 int BinaryTree::height(const Tree_Node* cur) const
 {
     if(!cur)
@@ -271,6 +322,33 @@ int BinaryTree::height(const Tree_Node* cur) const
         return leftHeight + 1;
     else
         return rightHeight + 1;
+}
+
+bool BinaryTree::CreatePattern(char* holder, char target, const Tree_Node* cur, size_t len, size_t counter)
+{
+    if(!cur)
+        return false;
+
+    if(leaf(cur) && cur->letter == target)
+        return true;
+
+    if(leaf(cur) && cur->letter != target)
+        return false;
+
+    if(counter >= len)
+        return false;
+
+    *holder = '0';
+    if(!CreatePattern(holder+1, target, cur->left, len, counter+1))
+    {
+        *holder = '1';
+        if(!CreatePattern(holder+1, target, cur->right, len, counter + 1))
+            return false;
+        else
+            return true;
+    }
+    else 
+        return true;
 }
 
 char BinaryTree::extractBits(const BitVector& vect, size_t& pos, const Tree_Node* cur) const
