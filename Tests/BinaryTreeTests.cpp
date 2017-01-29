@@ -73,6 +73,12 @@ namespace BinaryTreeTests
 
             Assert::AreEqual(test.height(), 5);
 
+            Assert::AreEqual(test.height('a'), 5);
+            Assert::AreEqual(test.height('b'), 5);
+            Assert::AreEqual(test.height('c'), 4);
+            Assert::AreEqual(test.height('f'), 3);
+            Assert::AreEqual(test.height('j'), 2);
+
             BinaryTree test2(1, 'a');
 
             test2 += test;
