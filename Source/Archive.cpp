@@ -173,7 +173,7 @@ void Archive::CompressFile(std::fstream& from, std::fstream& target, const Binar
     from.clear();
     from.seekg(0, std::ios::beg);
 
-    size_t step = HuffmanTree.weight() / 20;
+    size_t step = HuffmanTree.weight();
     size_t letters = 0;
 
     int percent = 5;
@@ -189,7 +189,7 @@ void Archive::CompressFile(std::fstream& from, std::fstream& target, const Binar
             letter = '\0';
 
         HuffmanTree.writeBits(bits, pos, letter);
-        letters++;
+        letters += 20;
 
         while(pos >= BitVector::dataSize)
         {
@@ -198,7 +198,7 @@ void Archive::CompressFile(std::fstream& from, std::fstream& target, const Binar
             pos -= BitVector::dataSize;
         }
 
-        if(percent != 100 && letters == step)
+        if(percent != 100 && letters >= step)
         {
             letters = 0;
             printf("%s: %d%% done!\n", fileName, percent);

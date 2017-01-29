@@ -76,7 +76,7 @@ void Extract::ExtractFile(std::fstream& archive, std::fstream& file, const Binar
     bitSet.resize(1);
     bitSet.readSet(archive, 0, 0);
 
-    size_t step = HuffmanTree.weight() / 20;
+    size_t step = HuffmanTree.weight();
     size_t letters = 0;
     int percent = 0;
 
@@ -105,9 +105,9 @@ void Extract::ExtractFile(std::fstream& archive, std::fstream& file, const Binar
         }
         file << curLetter;
         oldPos = pos;
-        letters++;
+        letters += 20;
 
-        if(percent != 100 && letters == step)
+        if(percent != 100 && letters >= step)
         {
             letters = 0;
             printf("%s: %d%% done!\n", fileName, percent);
