@@ -8,17 +8,10 @@
 #include "BitVector.h"
 #include "PriorityQueue.h"
 #include "Vector.h"
+#include "FileStates.h"
 
 namespace Archive
 {
-    enum File_Folder_States
-    {
-        NO_STATE,
-        DIRECTORY_START,
-        DIRECTORY_END,
-        FILE_START
-    };
-
     bool CompressFolder(std::fstream& archive, const char* folder_name, size_t folder_name_len);
 
     BinaryTree ConstructHuffmanTree(std::fstream& file);

@@ -8,17 +8,10 @@
 #include "PriorityQueue.h"
 #include "Vector.h"
 #include "dirent.h"
+#include "FileStates.h"
 
 namespace Extract
 {
-    enum File_Folder_States
-    {
-        NO_STATE,
-        DIRECTORY_START,
-        DIRECTORY_END,
-        FILE_START
-    };
-
     enum EXTRACTION_ERRORS
     {
         CORRUPTED_ARCHIVE
