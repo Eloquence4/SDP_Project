@@ -6,6 +6,7 @@
 #include "../Header/Vector.h"
 #include "../Header/Archive.h"
 #include "../Header/Extract.h"
+#include "../Header/List.h"
 
 const int max_buffer_size = 1048576; // 1 MB
 
@@ -78,7 +79,7 @@ int main(int argc, char* argv[])
         else if(strcmp(argv[1], "-Search") == 0
              || strcmp(argv[1], "-search") == 0)
         {
-
+            // Search
         }
         else
             printf("Invalid command line arguments! Use -help or -?\n");
@@ -95,9 +96,13 @@ int main(int argc, char* argv[])
     {
         // -help -?
     }
-    else
+    else if(argc < 2)
     {
         printf("This program requires command line arguments. Use -help or -?\n");
+    }
+    else // argc > 4
+    {
+        printf("This program requires less command line arguments. Use -help or -?\n");
     }
 
     return 0;
