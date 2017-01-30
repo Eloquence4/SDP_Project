@@ -1,14 +1,18 @@
 #ifndef ListFilesDec
 #define ListFilesDec
 
-
+#include <string> // For strcmp() and strlen()
+#include <fstream>
+#include "BinaryTree.h"
+#include "BitVector.h"
+#include "PriorityQueue.h"
+#include "Vector.h"
+#include "FileStates.h"
 
 namespace ListFiles
 {
-    bool ListFolder(std::fstream& archive);
-    bool ListFolder(std::fstream& archive, const char* curFolderName);
-
-    size_t CreatePath(char*& buffer, const char* path, const char* name, size_t path_len, size_t name_len);
+    bool ListFolder(std::fstream& archive, const char* curFolderName = nullptr, size_t curFolderNameLen = 0);
+    //void skipFile(std::fstream& archive, const BinaryTree& HuffmanTree);
 }
 
 #endif // ListDec
