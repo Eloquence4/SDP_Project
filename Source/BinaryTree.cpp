@@ -75,7 +75,7 @@ char BinaryTree::extractBits(const BitVector& vect, size_t& pos) const
     return extractBits(vect, pos, top);
 }
 
-int BinaryTree::height(char ofWhat)
+int BinaryTree::height(char ofWhat) const
 {
     if(!top)
         return 0;
@@ -267,7 +267,7 @@ void BinaryTree::BinaryImport(std::fstream& file)
     top = newTop;
 }
 
-bool BinaryTree::CreatePattern(char*& holder, char target)
+bool BinaryTree::CreatePattern(char*& holder, char target) const
 {
     int holderLen = height(target);
     
@@ -286,7 +286,7 @@ bool BinaryTree::CreatePattern(char*& holder, char target)
     return true;
 }
 
-int BinaryTree::height(char ofWhat, const Tree_Node* cur)
+int BinaryTree::height(char ofWhat, const Tree_Node* cur) const
 {
     if(!cur)
         return -1;
@@ -324,7 +324,7 @@ int BinaryTree::height(const Tree_Node* cur) const
         return rightHeight + 1;
 }
 
-bool BinaryTree::CreatePattern(char* holder, char target, const Tree_Node* cur, size_t len, size_t counter)
+bool BinaryTree::CreatePattern(char* holder, char target, const Tree_Node* cur, size_t len, size_t counter) const
 {
     if(!cur)
         return false;
