@@ -7,7 +7,6 @@
 #include "BitVector.h"
 #include "PriorityQueue.h"
 #include "Vector.h"
-#include "dirent.h"
 #include "FileStates.h"
 
 namespace Extract
@@ -22,7 +21,7 @@ namespace Extract
     BinaryTree ExtractHuffmanTree(std::fstream& archive);
     void ExtractFile(std::fstream& archive, std::fstream& file, const BinaryTree& HuffmanTree, const char* fileName);
 
-    size_t ReadFileName(char*& file_path, std::fstream& archive, const char* dir_path, size_t dir_path_len, size_t file_name_len);
+    size_t ReadFileName(char*& file_path, std::fstream& archive, const char* dir_path, size_t dir_path_len);
 }
 
 #endif // ExtractDec

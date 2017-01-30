@@ -15,11 +15,8 @@ bool Extract::ExtractFolder(std::fstream& archive, const char* WhereToExtract, s
 
         if(state == DIRECTORY_START)
         {
-            size_t new_folder_name_size = 0;
-            archive.read((char*) &new_folder_name_size, sizeof(new_folder_name_size));
-
             char* buffer = nullptr;
-            size_t bufferLen = ReadFileName(buffer, archive, WhereToExtract, WhereToExtractLen, new_folder_name_size);
+            size_t bufferLen = ReadFileName(buffer, archive, WhereToExtract, WhereToExtractLen);
 
             if(CreateDirectory(buffer, nullptr) == ERROR_PATH_NOT_FOUND)
             {
@@ -32,12 +29,9 @@ bool Extract::ExtractFolder(std::fstream& archive, const char* WhereToExtract, s
         }
         else if(state == FILE_START)
         {
-            size_t fileNameLen = 0;
-            archive.read((char*) &fileNameLen, sizeof(fileNameLen));
-
             char* filePath = nullptr;
 
-            ReadFileName(filePath, archive, WhereToExtract, WhereToExtractLen, fileNameLen);
+            ReadFileName(filePath, archive, WhereToExtract, WhereToExtractLen);
 
             BinaryTree HuffmanTree = ExtractHuffmanTree(archive);
 
@@ -117,8 +111,11 @@ void Extract::ExtractFile(std::fstream& archive, std::fstream& file, const Binar
     printf("%s: 100%% done!\n", fileName);
 }
 
-size_t Extract::ReadFileName(char*& file_path, std::fstream& archive, const char* dir_path, size_t dir_path_len, size_t file_name_len)
+size_t Extract::ReadFileName(char*& file_path, std::fstream& archive, const char* dir_path, size_t dir_path_len)
 {
+    size_t file_name_len = 0;
+    archive.read((char*)&file_name_len, sizeof(file_name_len));
+
     size_t file_path_len = 0;
     char* file_name = nullptr;
 
