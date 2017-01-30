@@ -10,7 +10,7 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
 
     CreatePath(buffer, folder_name, "*.*", folder_name_len, 3);
 
-    // folder_name is not a valid path to a folder
+    // if folder_name is not a valid path to a folder
     if((hFind = FindFirstFile(buffer, &fdFile)) == INVALID_HANDLE_VALUE)
     {
         delete[] buffer;
@@ -37,7 +37,7 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
         if(strcmp(fdFile.cFileName, "..") == 0)
             continue;
 
-        // If pent is a folder, recursively compress that
+        // If we find a folder, recursively compress it
         if(fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
         {
             size_t bufferLen = CreatePath(buffer, folder_name, fdFile.cFileName, folder_name_len, strlen(fdFile.cFileName));
@@ -50,9 +50,11 @@ bool Archive::CompressFolder(std::fstream& archive, const char* folder_name, siz
             
             std::fstream file(buffer, std::ios::in);
 
-            if(!file)
+            if(!file) 
             {
-                // Some message
+                printf("The following file could not be opened to be archived:\n%s\n", buffer);
+                delete[] buffer;
+                continue;
             }
 
             BinaryTree HuffmanTree = ConstructHuffmanTree(file);
@@ -113,18 +115,23 @@ BinaryTree Archive::ConstructHuffmanTree(std::fstream& file)
 
     Vector data;
 
+    data.resize(256); // The maximum amount of letters we can have
     FillWeightVector(file, data);
+
+    data.shrink_to_fit();
 
     size_t dataSize = data.size();
 
     PriorityQueue queue;
+    queue.resize(dataSize);
+
     for(size_t i = 0; i < dataSize; i++)
         queue.push(BinaryTree(data[i]));
 
     while(queue.size() > 1)
     {
-        BinaryTree lhs = std::move(queue.pop());
-        BinaryTree rhs = std::move(queue.pop());
+        BinaryTree lhs = queue.pop();
+        BinaryTree rhs = queue.pop();
         lhs += std::move(rhs);
         queue.push(std::move(lhs));
     }

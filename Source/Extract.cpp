@@ -36,9 +36,21 @@ bool Extract::ExtractFolder(std::fstream& archive, const char* WhereToExtract, s
             BinaryTree HuffmanTree = ExtractHuffmanTree(archive);
 
             std::fstream file(filePath, std::ios::out | std::ios::trunc);
-            if(!file) // Can only happen if the directory doesn't exist
+            if(!file)
             {
-                // Error
+                printf("Could not create a file at this location:\n%s\n", filePath);
+                delete[] filePath;
+
+                // Find the next file/directory
+                while(state != DIRECTORY_END && state != DIRECTORY_START && state != FILE_START)
+                {
+                    archive.read((char*)&state, sizeof(state));
+                    if(!archive.good())
+                        return true;
+                }
+                archive.seekg(-sizeof(state), std::ios::cur);
+                // Then continue
+                continue;
             }
 
             ExtractFile(archive, file, HuffmanTree, filePath);

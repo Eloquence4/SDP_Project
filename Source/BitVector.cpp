@@ -144,7 +144,7 @@ unsigned long long& BitVector::getBitSet(size_t index)
     return data[index];
 }
 
-const unsigned long long& BitVector::getBitSet(size_t index) const
+unsigned long long BitVector::getBitSet(size_t index) const
 {
     if(index >= size)
         throw INVALID_BIT_INDEX;

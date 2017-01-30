@@ -280,6 +280,7 @@ bool BinaryTree::CreatePattern(char*& holder, char target) const
     if(!CreatePattern(holder, target, top, holderLen, 0))
     {
         delete[] holder;
+        holder = nullptr;
         return false;
     }
 

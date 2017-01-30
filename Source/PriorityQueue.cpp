@@ -110,7 +110,7 @@ void PriorityQueue::push(BinaryTree&& what)
 BinaryTree PriorityQueue::pop()
 {
     if(empty())
-        throw Queue_Is_Empty;
+        throw QUEUE_IS_EMPTY;
 
     size_t old_start = start;
     start = (start + 1) % max_size;
@@ -123,7 +123,7 @@ BinaryTree PriorityQueue::pop()
 const BinaryTree& PriorityQueue::front() const
 {
     if(empty())
-        throw Queue_Is_Empty;
+        throw QUEUE_IS_EMPTY;
 
     return data[start];
 }
@@ -131,7 +131,7 @@ const BinaryTree& PriorityQueue::front() const
 BinaryTree PriorityQueue::front()
 {
     if(empty())
-        throw Queue_Is_Empty;
+        throw QUEUE_IS_EMPTY;
 
     return data[start];
 }
